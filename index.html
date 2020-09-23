@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Examples using matrix transforms in SVG</title>
     <script src="jslibs/d3.v3.min.js" charset="utf-8"></script>
+    <script src="jsmatrix.js"></script>
     <style>
         .square {
             stroke: black;
@@ -25,35 +26,8 @@
 <h1>Matrix Multiplication And Composition Demo</h1>
 <h2>Chris Tralie</h2>
 
-<table>
-    <tr>
-        <td><h2><center>Ax</center></h2></td>
-        <td><h2><center>B(Ax)</center></h2></td>
-        <td><h2><center>(BA)x</center></h2></td>
-    </tr>
-    <tr>
-        <td>
-            <center>
-            <button type = "button" onclick = "showA()">Show Transformation</button>
-            </center>
-        </td>
-        <td>
-            <center>
-            <button type = "button" onclick = "showAB1()">Show Transformation</button>
-            </center>
-        </td>
-        <td>
-                <center>
-                <button type = "button" onclick = "showAB2()">Show Transformation</button>
-                </center>
-        </td>
-    </tr>
-    <tr>
-        <td><svg id ="Ax" width="300", height="300", viewBox="-100 -100 300 300"></svg></td>
-        <td><svg id ="ABx1" width="300", height="300", viewBox="-100 -100 300 300"></svg></td>
-        <td><svg id ="ABx2" width="300", height="300", viewBox="-100 -100 300 300"></svg></td>
-    </tr>
-</table>
+<div id = "matrixdisplay"></div>
+
 
 
 
@@ -97,110 +71,8 @@
 </table>
 
 <script>
-    var svgs = [d3.select("#Ax"), d3.select("#ABx1"), d3.select("#ABx2")];
-    console.log(svgs);
-    svgs.forEach(function(item) {
-        //item.attr("transform", "scale(-1, -1)");
-        item.attr("transform", "translate(0, 300)");
-        item.attr("transform", "scale(1, -1)")
-    });
-
-    var colors = d3.scale.category10([3, 3]);
-    var shapeSide = 60;
-
-    function makeShape(parent) {
-        var face = parent.append("g")
-                .attr("viewBox", "0 0 "+shapeSide+" "+shapeSide+"");
-        // make a colorful square made up of 9 smaller squares to use as the reference object
-        var side = shapeSide/3;
-        for (var i = 0; i < 3; i++) {
-            for (var j = 0; j < 3; j++) {
-                face.append("rect")
-                        .attr("class", "square")
-                        .attr({width: side, height: side})
-                        .attr("transform", "translate(" + (j * side) + "," + (i * side) + ")")
-                        .style("opacity", .5)
-                        .style("fill", colors([j, i]));
-            }
-        };
-        return face;
-    }
-
-    function makePlane(parent) {
-        var plane = parent.append("g")
-                .attr("viewBox", "-100 -100 200 200")
-        plane.append("line").attr({x1: 0, y1: -100, x2: 0, y2: 100});
-        plane.append("line").attr({x1: -100, y1: 0, x2: 100, y2: 0});
-
-        return plane;
-    }
-
-    for (var i = 0; i < 3; i++) {
-        var plane = makePlane(svgs[i]);
-        var shape = makeShape(plane);
-        var m = 50;
-        shape.attr("id", "shape_" + i )
-                .append("circle").attr("r", 2).attr("fill", "red").attr("stroke", "black");
-        plane.attr("id", "plane_" + i )
-                .attr("transform", "translate("+m+", "+m+")")
-    }
-
-
-    var eye = [1, 0, 0, 1, 0, 0];
-
-    function transform(index, As, delay) {
-        let shape = d3.select("#shape_"+index);
-        shape.attr("transform", "matrix("+eye+")");
-        As.forEach(function(A, index) {
-            shape.transition().delay(delay*(index+1))
-            .attr("transform", "matrix("+A+")");
-        });
-    }
-
-    for (var i = 0; i < 3; i++) {
-        transform(i, eye, eye, 0)
-    }
-
-    function getMatrices() {
-        var A = [];
-        var B = [];
-        // Column major!!
-        for (var j = 1; j <= 2; j++) {
-            for (var i = 1; i <= 2; i++) {
-                A.push(document.getElementById("a"+i+""+j).value);
-                B.push(document.getElementById("b"+i+""+j).value);
-            }
-            
-        }
-        for (var i = 0; i < 2; i++) {
-            A.push(0); B.push(0);
-        }
-        var BA = [0, 0, 0, 0, 0, 0];
-        for (var j = 0; j < 2; j++) {
-            for (var i = 0; i < 2; i++) {
-                for (var k = 0; k < 2; k++) {
-                    // ba_ij = \sum_k b_ik * a_kj
-                    BA[j*2+i] += B[k*2+i]*A[j*2+k];
-                }
-            }
-        }
-        return {'A':A, 'B':B, 'BA':BA};
-    }
-
-    function showA() {
-        res = getMatrices();
-        transform(0, [res['A']], 1000);
-    }
-
-    function showAB1() {
-        res = getMatrices();
-        transform(1, [res['A'], res['BA']], 1000)
-    }
-
-    function showAB2() {
-        res = getMatrices();
-        transform(2, [res['BA']], 1000);
-    }
+    
+addMatrixWidgets("matrixdisplay");
 
 </script>
 
