@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Examples using matrix transforms in SVG</title>
     <script src="jslibs/d3.v3.min.js" charset="utf-8"></script>
+    <script src="jslibs/gl-matrix-min.js" charset="utf-8"></script>
     <script src="jsmatrix.js"></script>
     <style>
         .square {
@@ -29,51 +30,8 @@
 <div id = "matrixdisplay"></div>
 
 
-
-
-
-<table>
-    <tr>
-        <td><h2>A = </h2></td>
-        <td>
-
-                <table border="1">
-                        <tr>
-                            <td><input type="text" id = "a11" size="1"></input></td>
-                            <td><input type="text" id = "a12" size="1"></input></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" id = "a21" size="1"></input></td>
-                            <td><input type="text" id = "a22" size="1"></input></td>
-                        </tr>
-                    </table>
-
-        </td>
-        <td colspan="2"></td>
-            <td><h2>B = </h2></td>
-            <td>
-    
-                <table border="1">
-                        <tr>
-                            <td><input type="text" id = "b11" size="1"></input></td>
-                            <td><input type="text" id = "b12" size="1"></input></td>
-                        </tr>
-                        <tr>
-                            <td><input type="text" id = "b21" size="1"></input></td>
-                            <td><input type="text" id = "b22" size="1"></input></td>
-                        </tr>
-                    </table>
-    
-            </td>
-        </tr>
-
-
-</table>
-
 <script>
-    
-addMatrixWidgets("matrixdisplay");
-
+add2CompositionMatrixWidgets("matrixdisplay", true, 300, 300, 60);
 </script>
 
 </body>
