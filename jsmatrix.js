@@ -107,8 +107,9 @@ function addSquaresRow(labels, width, height, shapeSide) {
  * to represent matrix elements
  * @param {dom element} domElem DOM element to which to add the table
  * @param {boolean} homogenous Whether to use homogenous coordinates
+ * @param {string} name Display name for the matrix
  */
-function createMatrixInput(domElem, homogenous) {
+function createMatrixInput(domElem, homogenous, name) {
     let table = document.createElement("table");
     table.border = 1;
     let elems = [];
@@ -145,7 +146,17 @@ function createMatrixInput(domElem, homogenous) {
         }
         table.appendChild(row);
     }
-    domElem.appendChild(table);
+
+    let metaTable = document.createElement("table");
+    let metaRow = document.createElement("tr");
+    let metaCol1 = document.createElement("td");
+    metaCol1.innerHTML = "<h2>" + name + " = " + "</h2>";
+    metaRow.appendChild(metaCol1);
+    let metaCol2 = document.createElement("td");
+    metaCol2.appendChild(table);
+    metaRow.appendChild(metaCol2);
+    metaTable.appendChild(metaRow);
+    domElem.appendChild(metaTable);
     return elems;
 }
 
@@ -241,11 +252,11 @@ function add2CompositionMatrixWidgets(id, homogenous, width, height, sideLen, AI
     // Add two matrix inputs
     let matrixRow = document.createElement("tr");
     let col = document.createElement("td");
-    let AInputs = createMatrixInput(col, homogenous);
+    let AInputs = createMatrixInput(col, homogenous, "A");
     matrixToText(AInit, AInputs);
     matrixRow.appendChild(col);
     col = document.createElement("td");
-    let BInputs = createMatrixInput(col, homogenous);
+    let BInputs = createMatrixInput(col, homogenous, "B");
     matrixToText(BInit, BInputs);
     matrixRow.appendChild(col);
     table.appendChild(matrixRow);
