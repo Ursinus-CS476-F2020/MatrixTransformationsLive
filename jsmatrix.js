@@ -199,13 +199,14 @@ function matrixToText(m, elems) {
 }
 
 /**
- * Convert a 3x3 homogenous matrix into svg format
+ * Convert a 3x3 homogenous matrix into svg format, noting that
+ * glMatrix stores it in row major and svg stores it in column major
  * @param {glMatrix.mat3} m The matrix
  * @param {float} sideLen The length of a side of a square.
  *                        Scale the translation by this amount
  */
 function mat3ToSVG(m, sideLen) {
-    let ret = [m[0], m[1], m[3], m[4], sideLen*m[2], sideLen*m[5]];
+    let ret = [m[0], m[3], m[1], m[4], sideLen*m[2], sideLen*m[5]];
     return ret;
 }
 
