@@ -284,3 +284,44 @@ function add2CompositionMatrixWidgets(parent, homogenous, width, height, sideLen
     }
     return table;
 }
+
+
+/**
+ * Add the matrix widgets to a particular div element
+ * for Ax, Bx, A(Bx), and (AB)x
+ * @param {dom element} parent Parent element to which to add this widget
+ * @param {boolean} homogenous Whether to use homogenous coordinates
+ * @param {float} width Width of each transformation plot in pixels
+ * @param {float} height Height of each transformation plot in pixels
+ * @param {float} shapeSide Dimension of each square in pixels in the transformation plots
+ * @param {glMatrix.mat3} AInit Initial A matrix
+ */
+function addSingleMultiplicationWidget(parent, homogenous, width, height, sideLen, AInit) {
+    if (AInit === undefined) {
+        AInit = glMatrix.mat3.create();
+    }
+    let labels = ["Ax"];
+    let table = document.createElement("table");
+    parent.appendChild(table);
+    // First row with labels
+    table.appendChild(getLabelRow(labels));
+    // Second row with buttons
+    let res = getButtonRow(labels);
+    table.appendChild(res.row);
+    let buttons = res.buttons;
+    // Third row with colorful squares
+    res = addSquaresRow(labels, width, height, sideLen);
+    table.appendChild(res);
+    // Add  matrix input
+    let matrixRow = document.createElement("tr");
+    let col = document.createElement("td");
+    let AInputs = createMatrixInput(col, homogenous, "A");
+    matrixToText(AInit, AInputs);
+    matrixRow.appendChild(col);
+    table.appendChild(matrixRow);
+    buttons["Ax"].onclick = function() {
+        let A = textToMatrix(AInputs);
+        transform(0, [A], 1000, sideLen);
+    }
+    return table;
+}
