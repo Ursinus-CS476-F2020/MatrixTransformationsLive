@@ -209,9 +209,10 @@ function mat3ToSVG(m, sideLen) {
     return ret;
 }
 
+const EYE = [1, 0, 0, 1, 0, 0];
 function transform(label, As, delay, sideLen) {
     let shape = d3.select("#shape_"+label);
-    shape.attr("transform", "matrix([1, 0, 0, 1, 0, 0])");
+    shape.attr("transform", "matrix(" + EYE + ")");
     As.forEach(function(A, index) {
         shape.transition().delay(delay*(index+1))
         .attr("transform", "matrix("+mat3ToSVG(A, sideLen)+")");
@@ -221,7 +222,7 @@ function transform(label, As, delay, sideLen) {
 /**
  * Add the matrix widgets to a particular div element
  * for Ax, Bx, A(Bx), and (AB)x
- * @param {string} id ID of parent element
+ * @param {dom element} parent Parent element to which to add this widget
  * @param {boolean} homogenous Whether to use homogenous coordinates
  * @param {float} width Width of each transformation plot in pixels
  * @param {float} height Height of each transformation plot in pixels
@@ -229,7 +230,7 @@ function transform(label, As, delay, sideLen) {
  * @param {glMatrix.mat3} AInit Initial A matrix
  * @param {glMatrix.mat3} BInit Initial B matrix
  */
-function add2CompositionMatrixWidgets(id, homogenous, width, height, sideLen, AInit, BInit) {
+function add2CompositionMatrixWidgets(parent, homogenous, width, height, sideLen, AInit, BInit) {
     if (AInit === undefined) {
         AInit = glMatrix.mat3.create();
     }
@@ -237,7 +238,6 @@ function add2CompositionMatrixWidgets(id, homogenous, width, height, sideLen, AI
         BInit = glMatrix.mat3.create();
     }
     let labels = ["Ax", "Bx", "A(Bx)", "(AB)x"];
-    let parent = document.getElementById(id);
     let table = document.createElement("table");
     parent.appendChild(table);
     // First row with labels
@@ -282,4 +282,5 @@ function add2CompositionMatrixWidgets(id, homogenous, width, height, sideLen, AI
         glMatrix.mat3.multiply(BA, B, A);
         transform(3, [BA], 1000, sideLen);
     }
+    return table;
 }

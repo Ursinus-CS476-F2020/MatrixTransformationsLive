@@ -27,11 +27,32 @@
 <h1>Matrix Multiplication And Composition Demo</h1>
 <h2>Chris Tralie</h2>
 
+<table>
+    <tr>
+        <td>
+            <h3>Homogenous Coordinates</h3>
+        </td>
+        <td>
+            <input type = "checkbox" id = "homogenous"></input>
+        </td>
+    </tr>
+</table>
 <div id = "matrixdisplay"></div>
 
 
 <script>
-add2CompositionMatrixWidgets("matrixdisplay", false, 300, 300, 60);
+    let homogenous = document.getElementById("homogenous");
+    let matrixDisplay = document.getElementById("matrixdisplay");
+    let width = 300;
+    let height = 300;
+    let sideLength = 40;
+    let table = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+
+    homogenous.onclick = function() {
+        matrixDisplay.removeChild(table);
+        table = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+    };
+
 </script>
 
 </body>
