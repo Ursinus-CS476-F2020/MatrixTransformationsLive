@@ -238,7 +238,7 @@ function add2CompositionMatrixWidgets(parent, homogenous, width, height, sideLen
     if (BInit === undefined) {
         BInit = glMatrix.mat3.create();
     }
-    let labels = ["Ax", "Bx", "A(Bx)", "(AB)x"];
+    let labels = ["Ax", "Bx", "B(Ax)", "(BA)x"];
     let table = document.createElement("table");
     parent.appendChild(table);
     // First row with labels
@@ -269,14 +269,14 @@ function add2CompositionMatrixWidgets(parent, homogenous, width, height, sideLen
         let B = textToMatrix(BInputs);
         transform(1, [B], 1000, sideLen);
     }
-    buttons["A(Bx)"].onclick = function() {
+    buttons["B(Ax)"].onclick = function() {
         let A = textToMatrix(AInputs);
         let B = textToMatrix(BInputs);
         let BA = glMatrix.mat3.create();
         glMatrix.mat3.multiply(BA, B, A);
         transform(2, [A, BA], 1000, sideLen);
     }
-    buttons["(AB)x"].onclick = function() {
+    buttons["(BA)x"].onclick = function() {
         let A = textToMatrix(AInputs);
         let B = textToMatrix(BInputs);
         let BA = glMatrix.mat3.create();
