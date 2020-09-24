@@ -211,7 +211,7 @@ function mat3ToSVG(m, sideLen) {
 }
 
 const EYE = [1, 0, 0, 1, 0, 0];
-function transform(label, As, delay, sideLen) {
+function transformSquareGrid(label, As, delay, sideLen) {
     let shape = d3.select("#shape_"+label);
     shape.attr("transform", "matrix(" + EYE + ")");
     As.forEach(function(A, index) {
@@ -263,27 +263,27 @@ function add2CompositionMatrixWidgets(parent, homogenous, width, height, sideLen
     table.appendChild(matrixRow);
     buttons["Ax"].onclick = function() {
         let A = textToMatrix(AInputs);
-        transform(0, [A], 1000, sideLen);
+        transformSquareGrid(0, [A], 1000, sideLen);
     }
     buttons["Bx"].onclick = function() {
         let B = textToMatrix(BInputs);
-        transform(1, [B], 1000, sideLen);
+        transformSquareGrid(1, [B], 1000, sideLen);
     }
     buttons["B(Ax)"].onclick = function() {
         let A = textToMatrix(AInputs);
         let B = textToMatrix(BInputs);
         let BA = glMatrix.mat3.create();
         glMatrix.mat3.multiply(BA, B, A);
-        transform(2, [A, BA], 1000, sideLen);
+        transformSquareGrid(2, [A, BA], 1000, sideLen);
     }
     buttons["(BA)x"].onclick = function() {
         let A = textToMatrix(AInputs);
         let B = textToMatrix(BInputs);
         let BA = glMatrix.mat3.create();
         glMatrix.mat3.multiply(BA, B, A);
-        transform(3, [BA], 1000, sideLen);
+        transformSquareGrid(3, [BA], 1000, sideLen);
     }
-    return table;
+    return {"table":table, "AInputs":AInputs, "BInputs":BInputs};
 }
 
 
@@ -322,7 +322,7 @@ function addSingleMultiplicationWidget(parent, homogenous, width, height, sideLe
     table.appendChild(matrixRow);
     buttons["Ax"].onclick = function() {
         let A = textToMatrix(AInputs);
-        transform(0, [A], 1000, sideLen);
+        transformSquareGrid(0, [A], 1000, sideLen);
     }
-    return table;
+    return {"table":table, "AInputs":AInputs};
 }

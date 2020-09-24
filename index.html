@@ -46,11 +46,13 @@
     let width = 300;
     let height = 300;
     let sideLength = 40;
-    let table = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+    let res = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+    let table = res.table;
 
     homogenous.onclick = function() {
         matrixDisplay.removeChild(table);
-        table = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+        res = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+        table = res.table;
     };
 
 </script>
