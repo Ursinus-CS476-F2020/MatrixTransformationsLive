@@ -176,6 +176,9 @@ function textToMatrix(elems) {
     for (let i = 0; i < ms.length; i++) {
         m[i] = ms[i];
     }
+    // Elements are row-major, glMatrix is column major
+    // so need to transpose
+    glMatrix.mat3.transpose(m, m);
     return m;
 }
 
@@ -185,28 +188,32 @@ function textToMatrix(elems) {
  * @param {list of dom elements} elems Text inputs
  */
 function matrixToText(m, elems) {
+    // Elements are row-major, glMatrix is column major
+    // so need to transpose
+    let mT = glMatrix.mat3.create();
+    glMatrix.mat3.transpose(mT, m);
     if (elems.length == 4) {
-        elems[0].value = "" + m[0];
-        elems[1].value = "" + m[1];
-        elems[2].value = "" + m[3];
-        elems[3].value = "" + m[4];
+        elems[0].value = "" + mT[0];
+        elems[1].value = "" + mT[1];
+        elems[2].value = "" + mT[3];
+        elems[3].value = "" + mT[4];
     }
     else {
         for (let i = 0; i < elems.length; i++) {
-            elems[i].value = "" + m[i];
+            elems[i].value = "" + mT[i];
         }
     }
 }
 
 /**
- * Convert a 3x3 homogenous matrix into svg format, noting that
- * glMatrix stores it in row major and svg stores it in column major
+ * Convert a 3x3 homogenous matrix into svg format, noting
+ * that they are column major in both glMatrix.mat3 and svg
  * @param {glMatrix.mat3} m The matrix
  * @param {float} sideLen The length of a side of a square.
  *                        Scale the translation by this amount
  */
 function mat3ToSVG(m, sideLen) {
-    let ret = [m[0], m[3], m[1], m[4], sideLen*m[2], sideLen*m[5]];
+    let ret = [m[0], m[1], m[3], m[4], sideLen*m[6], sideLen*m[7]];
     return ret;
 }
 
