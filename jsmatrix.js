@@ -245,7 +245,7 @@ function addNCompositionMatrixWidgets(parent, NMats, homogenous, width, height, 
         let letter = (i+10).toString(36).toUpperCase();
         labels.push(letter + "x");
         allstr = letter + allstr;
-        if (i < N-1) {
+        if (i < NMats-1) {
             allstr = "(" + allstr + ")";
         }
         prestr = letter + prestr;
