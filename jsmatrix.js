@@ -150,7 +150,7 @@ function createMatrixInput(domElem, homogenous, name) {
     let metaTable = document.createElement("table");
     let metaRow = document.createElement("tr");
     let metaCol1 = document.createElement("td");
-    metaCol1.innerHTML = "<h2>" + name + " = " + "</h2>";
+    metaCol1.innerHTML = "<h2>" + name.slice(0,-1) + " = " + "</h2>";
     metaRow.appendChild(metaCol1);
     let metaCol2 = document.createElement("td");
     metaCol2.appendChild(table);
