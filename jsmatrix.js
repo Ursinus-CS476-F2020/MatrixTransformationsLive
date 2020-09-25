@@ -289,7 +289,7 @@ function addNCompositionMatrixWidgets(parent, NMats, homogenous, width, height, 
         buttons[allstr].onclick = function() {
             let Ms = [];
             let MAll = glMatrix.mat3.create();
-            for (let i = 0; i < N; i++) {
+            for (let i = 0; i < NMats; i++) {
                 let M = textToMatrix(MInputs[i]);
                 let MNext = glMatrix.mat3.create();
                 glMatrix.mat3.multiply(MNext, M, MAll);
@@ -300,7 +300,7 @@ function addNCompositionMatrixWidgets(parent, NMats, homogenous, width, height, 
         }
         buttons[prestr].onclick = function() {
             let MAll = glMatrix.mat3.create();
-            for (let i = 0; i < N; i++) {
+            for (let i = 0; i < NMats; i++) {
                 let M = textToMatrix(MInputs[i]);
                 glMatrix.mat3.multiply(MAll, M, MAll);
             }
