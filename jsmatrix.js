@@ -224,21 +224,38 @@ function transformSquareGrid(label, As, delay, sideLen) {
  * Add the matrix widgets to a particular div element
  * for Ax, Bx, A(Bx), and (AB)x
  * @param {dom element} parent Parent element to which to add this widget
+ * @param {int} NMats Number of compositions
  * @param {boolean} homogenous Whether to use homogenous coordinates
  * @param {float} width Width of each transformation plot in pixels
  * @param {float} height Height of each transformation plot in pixels
  * @param {float} shapeSide Dimension of each square in pixels in the transformation plots
- * @param {glMatrix.mat3} AInit Initial A matrix
- * @param {glMatrix.mat3} BInit Initial B matrix
+ * @param {array of glMatrix.mat3} initStates Initial conditions for the matrices
  */
-function add2CompositionMatrixWidgets(parent, homogenous, width, height, sideLen, AInit, BInit) {
-    if (AInit === undefined) {
-        AInit = glMatrix.mat3.create();
+function addNCompositionMatrixWidgets(parent, NMats, homogenous, width, height, sideLen, initStates) {
+    if (initStates === undefined) {
+        initStates = [];
     }
-    if (BInit === undefined) {
-        BInit = glMatrix.mat3.create();
+    while (initStates.length < NMats) {
+        initStates.push(glMatrix.mat3.create());
     }
-    let labels = ["Ax", "Bx", "B(Ax)", "(BA)x"];
+    let labels = [];
+    let prestr = ")x";
+    let allstr = "x";
+    for (let i = 0; i < NMats; i++) {
+        let letter = (i+10).toString(36).toUpperCase();
+        labels.push(letter + "x");
+        allstr = letter + allstr;
+        if (i < N-1) {
+            allstr = "(" + allstr + ")";
+        }
+        prestr = letter + prestr;
+    }
+    prestr = "(" + prestr;
+    if (NMats > 1) {
+        labels.push(allstr);
+        labels.push(prestr);
+    }
+
     let table = document.createElement("table");
     parent.appendChild(table);
     // First row with labels
@@ -250,40 +267,47 @@ function add2CompositionMatrixWidgets(parent, homogenous, width, height, sideLen
     // Third row with colorful squares
     res = addSquaresRow(labels, width, height, sideLen);
     table.appendChild(res);
-    // Add two matrix inputs
+    // Add matrix inputs
     let matrixRow = document.createElement("tr");
-    let col = document.createElement("td");
-    let AInputs = createMatrixInput(col, homogenous, "A");
-    matrixToText(AInit, AInputs);
-    matrixRow.appendChild(col);
-    col = document.createElement("td");
-    let BInputs = createMatrixInput(col, homogenous, "B");
-    matrixToText(BInit, BInputs);
-    matrixRow.appendChild(col);
+    let MInputs = [];
+    function callbackFactory(k) {
+        return function() {
+            let M = textToMatrix(MInputs[k]);
+            transformSquareGrid(k, [M], 1000, sideLen);
+        }
+    }
+    for (let i = 0; i < NMats; i++) {
+        let col = document.createElement("td");
+        let MiInputs = createMatrixInput(col, homogenous, labels[i]);
+        MInputs.push(MiInputs);
+        matrixToText(initStates[i], MiInputs);
+        matrixRow.appendChild(col);
+        buttons[labels[i]].onclick = callbackFactory(i);
+    }
     table.appendChild(matrixRow);
-    buttons["Ax"].onclick = function() {
-        let A = textToMatrix(AInputs);
-        transformSquareGrid(0, [A], 1000, sideLen);
+    if (NMats > 1) {
+        buttons[allstr].onclick = function() {
+            let Ms = [];
+            let MAll = glMatrix.mat3.create();
+            for (let i = 0; i < N; i++) {
+                let M = textToMatrix(MInputs[i]);
+                let MNext = glMatrix.mat3.create();
+                glMatrix.mat3.multiply(MNext, M, MAll);
+                Ms.push(MNext);
+                MAll = MNext;
+            }
+            transformSquareGrid(NMats, Ms, 1000, sideLen);
+        }
+        buttons[prestr].onclick = function() {
+            let MAll = glMatrix.mat3.create();
+            for (let i = 0; i < N; i++) {
+                let M = textToMatrix(MInputs[i]);
+                glMatrix.mat3.multiply(MAll, M, MAll);
+            }
+            transformSquareGrid(NMats+1, [MAll], 1000, sideLen);
+        }
     }
-    buttons["Bx"].onclick = function() {
-        let B = textToMatrix(BInputs);
-        transformSquareGrid(1, [B], 1000, sideLen);
-    }
-    buttons["B(Ax)"].onclick = function() {
-        let A = textToMatrix(AInputs);
-        let B = textToMatrix(BInputs);
-        let BA = glMatrix.mat3.create();
-        glMatrix.mat3.multiply(BA, B, A);
-        transformSquareGrid(2, [A, BA], 1000, sideLen);
-    }
-    buttons["(BA)x"].onclick = function() {
-        let A = textToMatrix(AInputs);
-        let B = textToMatrix(BInputs);
-        let BA = glMatrix.mat3.create();
-        glMatrix.mat3.multiply(BA, B, A);
-        transformSquareGrid(3, [BA], 1000, sideLen);
-    }
-    return {"table":table, "AInputs":AInputs, "BInputs":BInputs};
+    return {"table":table, "MInputs":MInputs};
 }
 
 /**
@@ -350,45 +374,4 @@ function addCommutativeMatrixGrid(parent, homogenous, width, height, sideLen, AI
         transformSquareGrid(3, [B, AB], 1000, sideLen);
     }
     return {"table":table, "AInputs":AInputs, "BInputs":BInputs};
-}
-
-
-/**
- * Add the matrix widgets to a particular div element
- * for Ax, Bx, A(Bx), and (AB)x
- * @param {dom element} parent Parent element to which to add this widget
- * @param {boolean} homogenous Whether to use homogenous coordinates
- * @param {float} width Width of each transformation plot in pixels
- * @param {float} height Height of each transformation plot in pixels
- * @param {float} shapeSide Dimension of each square in pixels in the transformation plots
- * @param {glMatrix.mat3} AInit Initial A matrix
- */
-function addSingleMultiplicationWidget(parent, homogenous, width, height, sideLen, AInit) {
-    if (AInit === undefined) {
-        AInit = glMatrix.mat3.create();
-    }
-    let labels = ["Ax"];
-    let table = document.createElement("table");
-    parent.appendChild(table);
-    // First row with labels
-    table.appendChild(getLabelRow(labels));
-    // Second row with buttons
-    let res = getButtonRow(labels);
-    table.appendChild(res.row);
-    let buttons = res.buttons;
-    // Third row with colorful squares
-    res = addSquaresRow(labels, width, height, sideLen);
-    table.appendChild(res);
-    // Add  matrix input
-    let matrixRow = document.createElement("tr");
-    let col = document.createElement("td");
-    let AInputs = createMatrixInput(col, homogenous, "A");
-    matrixToText(AInit, AInputs);
-    matrixRow.appendChild(col);
-    table.appendChild(matrixRow);
-    buttons["Ax"].onclick = function() {
-        let A = textToMatrix(AInputs);
-        transformSquareGrid(0, [A], 1000, sideLen);
-    }
-    return {"table":table, "AInputs":AInputs};
 }

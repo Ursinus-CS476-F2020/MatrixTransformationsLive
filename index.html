@@ -36,24 +36,41 @@
             <input type = "checkbox" id = "homogenous"></input>
         </td>
     </tr>
+    <tr>
+        <td>
+            <h3>Number of Matrices</h3>
+        </td>
+        <td>
+            <input type="number" min=1 step=1 max=10 value=2 id="N">
+        </td>
+    </tr>
 </table>
 <div id = "matrixdisplay"></div>
 
 
 <script>
     let homogenous = document.getElementById("homogenous");
+    let NInput = document.getElementById("N");
     let matrixDisplay = document.getElementById("matrixdisplay");
     let width = 300;
     let height = 300;
     let sideLength = 40;
-    let res = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+    let N = parseInt(NInput.value);
+    let res = addNCompositionMatrixWidgets(matrixDisplay, N, homogenous.checked, width, height, sideLength);
     let table = res.table;
 
     homogenous.onclick = function() {
         matrixDisplay.removeChild(table);
-        res = add2CompositionMatrixWidgets(matrixDisplay, homogenous.checked, width, height, sideLength);
+        res = addNCompositionMatrixWidgets(matrixDisplay, N, homogenous.checked, width, height, sideLength);
         table = res.table;
     };
+
+    NInput.onclick = function() {
+        N = parseInt(NInput.value);
+        matrixDisplay.removeChild(table);
+        res = addNCompositionMatrixWidgets(matrixDisplay, N, homogenous.checked, width, height, sideLength);
+        table = res.table;
+    }
 
 </script>
 
